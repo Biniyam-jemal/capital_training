@@ -1,0 +1,10 @@
+
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="alert alert-success">
+    <h2>Payment Successful! 🎉</h2>
+    <p>Thank you for purchasing <strong>{{ order.course.title }}</strong>.</p>
+    <p>Your enrollment is being processed — you'll have access within a few seconds.</p>
+    <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">Go to My Courses</a>
+</div>
+{% endblock %}

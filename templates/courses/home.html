@@ -1,0 +1,38 @@
+
+{% extends 'base/base.html' %}
+{% block content %}
+<h1>Welcome to Capital Software Training & Consultancy</h1>
+<p>Learn programming languages, backend frameworks, and frontend technologies from industry experts.</p>
+
+<h3 class="mt-4">Categories</h3>
+<div class="row">
+    {% for category in categories %}
+    <div class="col-md-3 mb-3">
+        <a href="{% url 'courses:course_list_by_category' category.slug %}" class="btn btn-outline-primary w-100">
+            {{ category.name }}
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<h3 class="mt-4">Featured Courses</h3>
+<div class="row">
+    {% for course in featured_courses %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            {% if course.thumbnail %}
+                <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ course.title }}</h5>
+                <p class="card-text">{{ course.short_description }}</p>
+                <p class="fw-bold">{% if course.is_free %}Free{% else %}${{ course.price }}{% endif %}</p>
+                <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-primary">View Course</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p>No courses published yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

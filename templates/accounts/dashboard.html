@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+{% block content %}
+
+{% if viewing_as_student %}
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <span>You're previewing the student view.</span>
+    <a href="{% url 'courses:instructor_dashboard' %}" class="btn btn-sm btn-outline-primary">Back to Instructor Dashboard</a>
+</div>
+{% endif %}
+
+<h2>My Courses</h2>
+<div class="row">
+    {% for enrollment in enrollments %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5>{{ enrollment.course.title }}</h5>
+                <p>Progress: {{ enrollment.progress_percent }}%</p>
+                <a href="{% url 'courses:course_detail' enrollment.course.slug %}" class="btn btn-success">Continue</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p>You haven't enrolled in any courses yet. <a href="{% url 'courses:course_list' %}">Browse courses</a></p>
+    {% endfor %}
+</div>
+{% endblock %}

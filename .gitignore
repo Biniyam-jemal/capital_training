@@ -1,0 +1,30 @@
+# Secrets 
+.env 
+.env.docker 
+.env.local 
+ 
+# Database 
+db.sqlite3 
+*.db 
+postgres_data/ 
+pgdata/ 
+ 
+# Python 
+__pycache__/ 
+*.pyc 
+*.pyo 
+venv/ 
+env/ 
+ 
+# Media files 
+media/ 
+staticfiles/ 
+ 
+# Docker logs 
+*.log 
+ 
+# IDE files 
+.vscode/ 
+.idea/ 
+*.swp 
+.DS_Store 

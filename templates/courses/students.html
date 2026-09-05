@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h1>Students in "{{ course.title }}"</h1>
+  <table class="table mt-3">
+    <thead><tr><th>Name</th><th>Email</th><th>Enrolled</th></tr></thead>
+    <tbody>
+      {% for enrollment in enrollments %}
+      <tr>
+        <td>{{ enrollment.student.username }}</td>
+        <td>{{ enrollment.student.email }}</td>
+        <td>{{ enrollment.created_at|date:"M d, Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" class="text-muted">No students enrolled yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-outline-secondary">Back to Course</a>
+</div>
+{% endblock %}

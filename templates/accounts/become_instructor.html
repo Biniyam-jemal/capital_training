@@ -1,0 +1,31 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+  <h1>Teach on Capital Training</h1>
+
+  {% if status == 'pending' %}
+    <div class="alert alert-warning mt-3">
+      <strong>Application under review.</strong>
+      Your instructor application is pending approval. We'll notify you once it's reviewed.
+    </div>
+
+  {% elif status == 'rejected' %}
+    <div class="alert alert-danger mt-3">
+      Your previous application was not approved. You're welcome to reapply below.
+    </div>
+    <form method="post" class="mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-success">Submit Application</button>
+    </form>
+
+  {% else %}
+    <p class="text-muted">Share your expertise with thousands of learners. Fill out the form below and our team will review your application.</p>
+    <form method="post" class="mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-success">Submit Application</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

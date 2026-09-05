@@ -1,0 +1,9 @@
+
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="alert alert-warning">
+    <h2>Payment Cancelled</h2>
+    <p>Your payment was not completed. No charge was made.</p>
+    <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Browse Courses</a>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+# docker-compose.yml
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - .env.docker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - .env.docker
+    environment:                                    # ← Correct indentation
+      - DJANGO_SETTINGS_MODULE=config.settings      # ← 2 spaces indent
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

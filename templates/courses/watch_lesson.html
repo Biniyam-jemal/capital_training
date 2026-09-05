@@ -1,0 +1,221 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb navigation -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'courses:course_detail' slug=course.slug %}">
+                    <i class="fas fa-arrow-left me-1"></i> {{ course.title }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-play-circle me-1"></i> {{ lesson.title }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Lesson header -->
+    <div class="lesson-header mb-4">
+        <h1 class="display-5 fw-bold">{{ lesson.title }}</h1>
+        <div class="d-flex align-items-center gap-3">
+            <p class="text-muted mb-0">
+                <i class="fas fa-book me-1"></i> {{ course.title }}
+            </p>
+            {% if lesson.duration %}
+                <span class="badge bg-secondary">
+                    <i class="fas fa-clock me-1"></i> {{ lesson.duration }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Video/content area -->
+    <div class="lesson-content">
+        <div class="video-container">
+            {% if lesson.video_url %}
+                <!-- YouTube Embed -->
+                <iframe 
+                    src="{{ lesson.video_url }}"
+                    class="video-iframe"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            {% else %}
+                <!-- Placeholder for lesson content -->
+                <div class="no-video-placeholder">
+                    <i class="fas fa-video-slash fa-4x text-white-50 mb-3"></i>
+                    <p class="text-white-50">No video available for this lesson</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lesson Description -->
+    {% if lesson.description %}
+        <div class="lesson-description mt-4">
+            <h5><i class="fas fa-info-circle me-2"></i>Description</h5>
+            <p class="text-muted mb-0">{{ lesson.description }}</p>
+        </div>
+    {% endif %}
+
+    <!-- Navigation buttons -->
+    <div class="lesson-navigation mt-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <a href="{% url 'courses:course_detail' slug=course.slug %}" 
+           class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Course
+        </a>
+        
+        <div class="d-flex gap-2">
+            {% if lesson.resource_file %}
+                <a href="{{ lesson.resource_file.url }}" 
+                   class="btn btn-outline-info" target="_blank">
+                    <i class="fas fa-download me-1"></i> Resources
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Video Container */
+    .video-container {
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        width: 100%;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    
+    .video-iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    
+    .no-video-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: #0d6efd;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: #0a58ca;
+        text-decoration: underline;
+    }
+    
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+    
+    /* Lesson Header */
+    .lesson-header h1 {
+        color: #212529;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Lesson Description */
+    .lesson-description {
+        background: #f8f9fa;
+        padding: 20px 25px;
+        border-radius: 12px;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .lesson-description h5 {
+        color: #212529;
+        margin-bottom: 10px;
+    }
+    
+    /* Navigation Buttons */
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+        transform: translateX(-3px);
+    }
+    
+    .btn-outline-info {
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .btn-outline-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
+    }
+    
+    /* Badge */
+    .badge {
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .badge.bg-secondary {
+        background: #6c757d !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .lesson-navigation {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        
+        .lesson-navigation .btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .d-flex.gap-2 {
+            flex-direction: column;
+        }
+        
+        .lesson-description {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}

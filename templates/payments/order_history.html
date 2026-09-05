@@ -1,0 +1,38 @@
+
+{% extends 'base/base.html' %}
+{% block content %}
+<h2>My Orders</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.course.title }}</td>
+            <td>${{ order.amount }}</td>
+            <td>
+                {% if order.status == 'paid' %}
+                    <span class="badge bg-success">Paid</span>
+                {% elif order.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% elif order.status == 'failed' %}
+                    <span class="badge bg-danger">Failed</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                {% endif %}
+            </td>
+            <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No orders yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

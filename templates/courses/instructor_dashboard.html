@@ -1,0 +1,47 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Instructor Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Courses</h5>
+                    <h2>{{ total_courses }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <h2>{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'courses:course_create' %}" class="btn btn-primary mb-3">+ New Course</a>
+
+    <h3>Your Courses</h3>
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    <p class="text-muted">{{ course.total_lessons }} lessons &middot; {{ course.is_published|yesno:"Published,Draft" }}</p>
+                    <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-primary btn-sm">Manage</a>
+                    <a href="{% url 'courses:course_students' course.slug %}" class="btn btn-outline-secondary btn-sm">Students</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">You don't have any courses yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
