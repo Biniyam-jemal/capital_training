@@ -11,8 +11,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Comma-separated in .env, e.g.:
 # ALLOWED_HOSTS=localhost,127.0.0.1,sabbath-flatly-grub.ngrok-free.dev
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', 'capital-software-training-and-consultancy.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://capital-software-training-and-consultancy.onrender.com']
 
 # Render sets this automatically for every web service - append it without
 # requiring you to hardcode or guess the .onrender.com URL.
