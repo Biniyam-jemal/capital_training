@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from .forms import StudentRegistrationForm, InstructorApplicationForm
+from .forms import StudentRegistrationForm, InstructorApplicationForm, ProfileForm
 
 
 def register(request):
@@ -62,6 +63,9 @@ def become_instructor(request):
         form = InstructorApplicationForm(request.POST)
         if form.is_valid():
             user.instructor_bio = form.cleaned_data['instructor_bio']
+            user.instructor_portfolio_url = form.cleaned_data['instructor_portfolio_url']
+            user.instructor_teaching_url = form.cleaned_data['instructor_teaching_url']
+            user.instructor_credentials_url = form.cleaned_data['instructor_credentials_url']
             user.instructor_status = user.InstructorStatus.PENDING
             user.instructor_applied_at = timezone.now()
             user.save()
@@ -74,3 +78,19 @@ def become_instructor(request):
         'form': form,
         'status': user.instructor_status,
     })
+
+
+
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('accounts:profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, 'accounts/profile.html', {'form': form})

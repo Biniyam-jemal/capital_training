@@ -2,7 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Category(models.Model):
     """e.g. Programming Languages, Backend Frameworks, Frontend, Databases"""
@@ -105,3 +105,40 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.module.course.title} - {self.title}"
+
+
+
+# courses/models.py — append to end of file
+
+
+
+
+class Review(models.Model):
+    """One rating+review per student per course."""
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='reviews')
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews'
+    )
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(blank=True)
+
+    # Instructor reply — optional, lives on the same row so there's no extra join
+    instructor_response = models.TextField(blank=True)
+    instructor_responded_at = models.DateTimeField(null=True, blank=True)
+
+    # Admin moderation — soft-hide instead of delete, matches your "prefer archive" rule
+    is_hidden = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['course', 'student'], name='one_review_per_student_per_course'),
+        ]
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.student.username} rated {self.course.title}: {self.rating}★"

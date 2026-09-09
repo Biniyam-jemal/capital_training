@@ -3,11 +3,13 @@ from django.contrib import messages
 from accounts.decorators import instructor_required
 from .models import Course, Module, Lesson
 from .forms import CourseForm, ModuleForm, LessonForm
-
+from django.db.models import Count, Q
 
 @instructor_required
 def instructor_dashboard(request):
-    courses = Course.objects.filter(instructor=request.user)
+    courses = Course.objects.filter(instructor=request.user).annotate(
+        student_count=Count('enrollments', filter=Q(enrollments__is_active=True))
+    )
 
     from enrollments.models import Enrollment
     total_students = Enrollment.objects.filter(
@@ -119,3 +121,41 @@ def lesson_delete(request, lesson_id):
     lesson.delete()
     messages.success(request, 'Lesson deleted.')
     return redirect('courses:course_edit', slug=course_slug)
+@instructor_required
+def course_delete(request, slug):
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    if request.method == 'POST':
+        if course.orders.exists():
+            messages.error(
+                request,
+                f'"{course.title}" has order history and can\'t be deleted, to protect your sales records. '
+                f'Unpublish it instead to hide it from students.'
+            )
+        else:
+            title = course.title
+            course.delete()
+            messages.success(request, f'"{title}" has been deleted.')
+    return redirect('courses:instructor_dashboard')
+
+
+@instructor_required
+def course_toggle_publish(request, slug):
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    if request.method == 'POST':
+        course.is_published = not course.is_published
+        course.save(update_fields=['is_published'])
+        state = 'published' if course.is_published else 'unpublished'
+        messages.success(request, f'"{course.title}" is now {state}.')
+    return redirect('courses:instructor_dashboard')
+
+
+@instructor_required
+def remove_student(request, slug, enrollment_id):
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    from enrollments.models import Enrollment
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id, course=course)
+    if request.method == 'POST':
+        enrollment.is_active = False
+        enrollment.save(update_fields=['is_active'])
+        messages.success(request, f'{enrollment.student.username} has been removed from "{course.title}".')
+    return redirect('courses:course_students', slug=course.slug)

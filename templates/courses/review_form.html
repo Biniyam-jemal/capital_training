@@ -1,0 +1,223 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Review {{ course.title }} - Capital Training{% endblock %}
+
+{% block content %}
+<div class="review-wrapper">
+    <div class="review-card">
+        <a href="{% url 'courses:course_detail' course.slug %}" class="back-link">
+            &larr; Back to course
+        </a>
+
+        <h1 class="review-title">Rate this course</h1>
+        <p class="review-subtitle">{{ course.title }}</p>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="rating-section">
+                <div class="star-picker" id="starPicker">
+    {% for value in star_range %}
+    <span class="star-icon" data-value="{{ value }}" tabindex="0" role="button" aria-label="Rate {{ value }} out of 5">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.9-6.2 3.9 1.6-7L2 9.2l7.1-.6z"/></svg>
+    </span>
+    {% endfor %}
+</div>
+                <div class="rating-caption" id="ratingCaption">
+                    {% if form.rating.value %}Your rating: <span id="ratingValue">{{ form.rating.value }}</span>/5{% else %}Tap a star to rate{% endif %}
+                </div>
+                <input type="hidden" name="{{ form.rating.html_name }}" id="ratingInput" value="{{ form.rating.value|default:'' }}" required>
+                {% if form.rating.errors %}
+                    <div class="text-danger small mt-1">{{ form.rating.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.comment.id_for_label }}" class="form-label">Write a review <span class="text-muted fw-normal">(optional)</span></label>
+                <textarea
+                    name="{{ form.comment.html_name }}"
+                    id="{{ form.comment.id_for_label }}"
+                    class="form-control review-textarea {% if form.comment.errors %}is-invalid{% endif %}"
+                    rows="5"
+                    placeholder="What did you like or dislike? Would you recommend this course to others?">{{ form.comment.value|default:'' }}</textarea>
+                {% if form.comment.errors %}
+                    <div class="invalid-feedback">{{ form.comment.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="review-actions">
+                <button type="submit" class="btn btn-primary btn-lg">Submit review</button>
+                <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .review-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 40px 16px 60px;
+    }
+    .review-card {
+        width: 100%;
+        max-width: 560px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 40px 36px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eef0f2;
+    }
+    .back-link {
+        display: inline-block;
+        font-size: 0.85rem;
+        color: #6a6f73;
+        text-decoration: none;
+        margin-bottom: 18px;
+    }
+    .back-link:hover {
+        color: #6610f2;
+    }
+    .review-title {
+        font-weight: 700;
+        font-size: 1.7rem;
+        margin-bottom: 4px;
+    }
+    .review-subtitle {
+        color: #6a6f73;
+        margin-bottom: 28px;
+    }
+    .rating-section {
+        text-align: center;
+        background: #f8f9fb;
+        border-radius: 12px;
+        padding: 28px 16px;
+        margin-bottom: 28px;
+    }
+    .star-picker {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .star-icon {
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        outline: none;
+    }
+    .star-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: #dcdfe3;
+        transition: fill 0.15s, transform 0.1s;
+    }
+    .star-icon:hover svg,
+    .star-icon.hover svg {
+        transform: scale(1.08);
+    }
+    .star-icon.filled svg {
+        fill: #e59819;
+    }
+    .rating-caption {
+        font-size: 0.9rem;
+        color: #6a6f73;
+        font-weight: 600;
+        min-height: 20px;
+    }
+    .review-textarea {
+        border-radius: 8px;
+        border: 1px solid #dfe3e8;
+        padding: 12px 14px;
+        resize: vertical;
+    }
+    .review-textarea:focus {
+        border-color: #6610f2;
+        box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.15);
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #2c3e50;
+    }
+    .review-actions {
+        display: flex;
+        gap: 12px;
+    }
+    .review-actions .btn {
+        flex: 1;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 12px;
+    }
+    .review-actions .btn-primary {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        border: none;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .review-actions .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(102, 16, 242, 0.3);
+    }
+    .review-actions .btn-outline-secondary {
+        border-color: #dfe3e8;
+        color: #495057;
+    }
+    @media (max-width: 480px) {
+        .review-card {
+            padding: 28px 22px;
+        }
+        .star-icon {
+            width: 36px;
+            height: 36px;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    var stars = document.querySelectorAll('#starPicker .star-icon');
+    var input = document.getElementById('ratingInput');
+    var caption = document.getElementById('ratingCaption');
+    var selected = parseInt(input.value, 10) || 0;
+
+    function paint(upTo) {
+        stars.forEach(function (star) {
+            var val = parseInt(star.getAttribute('data-value'), 10);
+            star.classList.toggle('filled', val <= upTo);
+        });
+    }
+
+    paint(selected);
+
+    stars.forEach(function (star) {
+        var val = parseInt(star.getAttribute('data-value'), 10);
+
+        star.addEventListener('mouseenter', function () { paint(val); });
+        star.addEventListener('mouseleave', function () { paint(selected); });
+
+        star.addEventListener('click', function () {
+            selected = val;
+            input.value = val;
+            paint(selected);
+            caption.innerHTML = 'Your rating: <span id="ratingValue">' + val + '</span>/5';
+        });
+
+        star.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                star.click();
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}

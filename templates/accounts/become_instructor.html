@@ -1,31 +1,222 @@
 {% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Teach on Capital Training{% endblock %}
+
 {% block content %}
-<div class="container mt-4" style="max-width: 600px;">
-  <h1>Teach on Capital Training</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  {% if status == 'pending' %}
-    <div class="alert alert-warning mt-3">
-      <strong>Application under review.</strong>
-      Your instructor application is pending approval. We'll notify you once it's reviewed.
+<style>
+  .instr-hero {
+    background: linear-gradient(135deg, #14532d 0%, #1e293b 100%);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .instr-hero p { color: rgba(255,255,255,.85); }
+  .benefit-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.75rem;
+  }
+  .benefit-icon {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 0.75rem;
+    background: #ecfdf5;
+    color: #15803d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+  }
+  .benefit-item h6 { margin-bottom: 0.25rem; font-weight: 600; }
+  .benefit-item p { margin-bottom: 0; color: #6c757d; font-size: 0.92rem; }
+
+  .app-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+  }
+  .app-card .card-body { padding: 2.25rem; }
+  .field-label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .field-label .required-dot { color: #dc3545; font-size: 0.7rem; }
+  .field-help { font-size: 0.82rem; color: #6c757d; margin-top: 0.3rem; }
+  .form-control:focus { border-color: #15803d; box-shadow: 0 0 0 0.2rem rgba(21,128,61,.15); }
+  .btn-instructor {
+    background: #15803d;
+    border-color: #15803d;
+    font-weight: 600;
+    padding: 0.65rem 1.75rem;
+  }
+  .btn-instructor:hover { background: #14532d; border-color: #14532d; }
+
+  .status-card {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+    padding: 3rem 2rem;
+  }
+  .status-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem;
+    margin: 0 auto 1.25rem;
+  }
+</style>
+
+{% if status == 'pending' %}
+  <div class="status-card bg-white">
+    <div class="status-icon" style="background:#fef9c3;color:#a16207;">
+      <i class="bi bi-hourglass-split"></i>
+    </div>
+    <h3 class="fw-bold mb-2">Application under review</h3>
+    <p class="text-muted mb-0">
+      Thanks for applying to teach on Capital Training. Our team is reviewing your
+      submission and will notify you by email once a decision has been made —
+      usually within 2&ndash;3 business days.
+    </p>
+  </div>
+
+{% else %}
+
+  <div class="instr-hero">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="fw-bold mb-2">Teach on Capital Training</h1>
+        <p class="mb-0 fs-5">
+          Share your expertise with thousands of learners. Tell us about yourself
+          below and our team will review your application.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left: value proposition -->
+    <div class="col-lg-4">
+      <h5 class="fw-bold mb-4">Why teach with us</h5>
+
+      <div class="benefit-item">
+        <div class="benefit-icon"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <h6>Reach real learners</h6>
+          <p>Publish courses to a growing, engaged student base.</p>
+        </div>
+      </div>
+
+      <div class="benefit-item">
+        <div class="benefit-icon"><i class="bi bi-cash-coin"></i></div>
+        <div>
+          <h6>Get paid for your expertise</h6>
+          <p>Set your own course pricing and earn from every enrollment.</p>
+        </div>
+      </div>
+
+      <div class="benefit-item">
+        <div class="benefit-icon"><i class="bi bi-shield-check"></i></div>
+        <div>
+          <h6>A vetted, credible platform</h6>
+          <p>We review every instructor to keep course quality high for students.</p>
+        </div>
+      </div>
+
+      {% if status == 'rejected' %}
+        <div class="alert alert-danger mt-4">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          Your previous application wasn't approved. You're welcome to update your
+          details and reapply below.
+        </div>
+      {% endif %}
     </div>
 
-  {% elif status == 'rejected' %}
-    <div class="alert alert-danger mt-3">
-      Your previous application was not approved. You're welcome to reapply below.
-    </div>
-    <form method="post" class="mt-3">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-success">Submit Application</button>
-    </form>
+    <!-- Right: application form -->
+    <div class="col-lg-8">
+      <div class="card app-card">
+        <div class="card-body">
+          <h5 class="fw-bold mb-4">Instructor application</h5>
 
-  {% else %}
-    <p class="text-muted">Share your expertise with thousands of learners. Fill out the form below and our team will review your application.</p>
-    <form method="post" class="mt-3">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-success">Submit Application</button>
-    </form>
-  {% endif %}
-</div>
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Bio -->
+            <div class="mb-4">
+              <label class="field-label" for="{{ form.instructor_bio.id_for_label }}">
+                <i class="bi bi-chat-left-text"></i>
+                {{ form.instructor_bio.label }}
+                <span class="required-dot">●</span>
+              </label>
+              {{ form.instructor_bio }}
+              {% if form.instructor_bio.errors %}
+                <div class="text-danger small mt-1">{{ form.instructor_bio.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Portfolio / GitHub -->
+            <div class="mb-4">
+              <label class="field-label" for="{{ form.instructor_portfolio_url.id_for_label }}">
+                <i class="bi bi-github"></i>
+                {{ form.instructor_portfolio_url.label }}
+                <span class="required-dot">●</span>
+              </label>
+              {{ form.instructor_portfolio_url }}
+              <div class="field-help">{{ form.instructor_portfolio_url.help_text }}</div>
+              {% if form.instructor_portfolio_url.errors %}
+                <div class="text-danger small mt-1">{{ form.instructor_portfolio_url.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Teaching platform link -->
+            <div class="mb-4">
+              <label class="field-label" for="{{ form.instructor_teaching_url.id_for_label }}">
+                <i class="bi bi-play-btn"></i>
+                {{ form.instructor_teaching_url.label }}
+              </label>
+              {{ form.instructor_teaching_url }}
+              <div class="field-help">{{ form.instructor_teaching_url.help_text }}</div>
+              {% if form.instructor_teaching_url.errors %}
+                <div class="text-danger small mt-1">{{ form.instructor_teaching_url.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Credentials link -->
+            <div class="mb-4">
+              <label class="field-label" for="{{ form.instructor_credentials_url.id_for_label }}">
+                <i class="bi bi-link-45deg"></i>
+                {{ form.instructor_credentials_url.label }}
+                <span class="required-dot">●</span>
+              </label>
+              {{ form.instructor_credentials_url }}
+              <div class="field-help">{{ form.instructor_credentials_url.help_text }}</div>
+              {% if form.instructor_credentials_url.errors %}
+                <div class="text-danger small mt-1">{{ form.instructor_credentials_url.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-2">
+              <span class="text-muted small"><span class="required-dot">●</span> required</span>
+              <button type="submit" class="btn btn-instructor text-white">
+                Submit Application <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}

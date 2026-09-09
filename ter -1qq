@@ -1,0 +1,5 @@
+[33mcommit 88b00a39e4e5f65dffb941a7a02147df6d47a6d9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Your GitHub Username <your-email@example.com>
+Date:   Sun Sep 6 02:14:59 2026 -0700
+
+    Add start.sh for migrations and admin creation on Render

@@ -43,6 +43,7 @@
                                     <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}">My Courses</a></li>
                                 {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'payments:order_history' %}">My Orders</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">

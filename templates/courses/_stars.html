@@ -1,0 +1,12 @@
+{% if rating %}
+  <span class="text-warning" aria-hidden="true">
+    {% for i in "12345" %}
+      {% if forloop.counter <= rating %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}
+    {% endfor %}
+  </span>
+  {% if count != None %}
+    <span class="text-muted small">{{ rating|floatformat:1 }} ({{ count }} review{{ count|pluralize }})</span>
+  {% endif %}
+{% else %}
+  <span class="text-muted small">No reviews yet</span>
+{% endif %}

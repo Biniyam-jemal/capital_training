@@ -9,7 +9,7 @@ class CustomUserAdmin(BaseUserAdmin):
 
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Role & Instructor Application', {
-            'fields': ('role', 'instructor_status', 'instructor_bio', 'instructor_applied_at', 'profile_picture', 'bio', 'phone_number')
+            'fields': ('role', 'instructor_status', 'instructor_bio', 'instructor_portfolio_url', 'instructor_teaching_url', 'instructor_credentials_url', 'instructor_applied_at', 'profile_picture', 'bio', 'phone_number')
         }),
     )
 
@@ -30,3 +30,12 @@ class CustomUserAdmin(BaseUserAdmin):
 
 # Register only once - using the decorator approach is cleaner
 admin.site.register(User, CustomUserAdmin)
+
+
+
+
+from django.contrib import admin
+
+admin.site.site_header = "Capital Training Administration"
+admin.site.site_title = "Capital Training Admin"
+admin.site.index_title = "Site Administration"

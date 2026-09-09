@@ -1,27 +1,116 @@
 {% extends 'base/base.html' %}
+
+{% block title %}My Courses - Capital Training{% endblock %}
+
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 {% if viewing_as_student %}
-<div class="alert alert-info d-flex justify-content-between align-items-center">
-    <span>You're previewing the student view.</span>
-    <a href="{% url 'courses:instructor_dashboard' %}" class="btn btn-sm btn-outline-primary">Back to Instructor Dashboard</a>
+<div class="preview-banner">
+    <span><i class="bi bi-eye-fill"></i> You're previewing the student view.</span>
+    <a href="{% url 'courses:instructor_dashboard' %}" class="btn-back-instructor">Back to Instructor Dashboard</a>
 </div>
 {% endif %}
 
-<h2>My Courses</h2>
-<div class="row">
+<div class="section-heading">
+    <i class="bi bi-mortarboard-fill"></i>
+    <span>My Courses</span>
+</div>
+
+<div class="enrolled-grid">
     {% for enrollment in enrollments %}
-    <div class="col-md-4 mb-3">
-        <div class="card">
-            <div class="card-body">
-                <h5>{{ enrollment.course.title }}</h5>
-                <p>Progress: {{ enrollment.progress_percent }}%</p>
-                <a href="{% url 'courses:course_detail' enrollment.course.slug %}" class="btn btn-success">Continue</a>
+    <div class="enrolled-card">
+        <div class="enrolled-thumb">
+            {% if enrollment.course.thumbnail %}
+                <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}">
+            {% else %}
+                <div class="thumb-fallback"><i class="bi bi-play-circle"></i></div>
+            {% endif %}
+        </div>
+        <div class="enrolled-info">
+            <h3 class="enrolled-title">{{ enrollment.course.title }}</h3>
+
+            <div class="progress-row">
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ enrollment.progress_percent }}%;"></div>
+                </div>
+                <span class="progress-pct">{{ enrollment.progress_percent }}%</span>
             </div>
+
+            <a href="{% url 'courses:course_detail' enrollment.course.slug %}" class="btn-continue">
+                <i class="bi bi-play-fill"></i> Continue
+            </a>
         </div>
     </div>
     {% empty %}
-        <p>You haven't enrolled in any courses yet. <a href="{% url 'courses:course_list' %}">Browse courses</a></p>
+    <div class="empty-state">
+        <i class="bi bi-journal-x"></i>
+        <h3>You haven't enrolled in any courses yet</h3>
+        <p>Explore our catalog and start learning something new today.</p>
+        <a href="{% url 'courses:course_list' %}" class="btn-browse">Browse Courses</a>
+    </div>
     {% endfor %}
 </div>
+
+<style>
+    .preview-banner {
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+        background: #eef7f5; border: 1px solid #c9e6dd; border-radius: 12px;
+        padding: 14px 20px; margin-bottom: 28px; font-size: 0.92rem; color: #1f6f5c; font-weight: 500;
+    }
+    .btn-back-instructor {
+        background: #fff; border: 1.5px solid #1f6f5c; color: #1f6f5c;
+        font-weight: 600; font-size: 0.85rem; padding: 7px 16px; border-radius: 8px; text-decoration: none;
+    }
+    .btn-back-instructor:hover { background: #1f6f5c; color: #fff; }
+
+    .section-heading {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 700; font-size: 1.35rem; color: #1c1f24; margin-bottom: 22px;
+    }
+    .section-heading i { color: #6610f2; }
+
+    .enrolled-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .enrolled-card {
+        background: #fff; border: 1px solid #eef0f2; border-radius: 14px; overflow: hidden;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .enrolled-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(20,20,40,0.10); }
+    .enrolled-thumb { aspect-ratio: 16/9; background: #f4f5f8; }
+    .enrolled-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-fallback {
+        width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #6610f2, #007bff); color: #fff; font-size: 2rem;
+    }
+    .enrolled-info { padding: 16px 18px 18px; }
+    .enrolled-title { font-size: 1.02rem; font-weight: 700; color: #1c1f24; margin-bottom: 14px; }
+
+    .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .progress-track { flex: 1; height: 8px; background: #eef0f2; border-radius: 20px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #007bff, #6610f2); border-radius: 20px; }
+    .progress-pct { font-size: 0.78rem; font-weight: 700; color: #6610f2; min-width: 34px; text-align: right; }
+
+    .btn-continue {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        background: linear-gradient(135deg, #007bff, #6610f2); color: #fff;
+        font-weight: 600; font-size: 0.88rem; padding: 10px 0; border-radius: 8px; text-decoration: none;
+    }
+    .btn-continue:hover { color: #fff; opacity: 0.92; }
+
+    .empty-state {
+        grid-column: 1 / -1; text-align: center; padding: 60px 20px;
+        background: #fafbfc; border: 1.5px dashed #dfe3e8; border-radius: 14px;
+    }
+    .empty-state i { font-size: 2.6rem; color: #c3c7cd; margin-bottom: 14px; display: block; }
+    .empty-state h3 { font-weight: 700; font-size: 1.1rem; color: #2c3345; margin-bottom: 6px; }
+    .empty-state p { color: #6a6f77; font-size: 0.9rem; margin-bottom: 20px; }
+    .btn-browse {
+        display: inline-block; background: linear-gradient(135deg, #007bff, #6610f2); color: #fff;
+        font-weight: 600; padding: 10px 24px; border-radius: 10px; text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .enrolled-grid { grid-template-columns: 1fr; }
+    }
+</style>
 {% endblock %}

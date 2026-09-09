@@ -18,15 +18,29 @@ class User(AbstractUser):
     # Role and Instructor fields
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.STUDENT)
     instructor_status = models.CharField(
-        max_length=20, 
-        choices=InstructorStatus.choices, 
+        max_length=20,
+        choices=InstructorStatus.choices,
         default=InstructorStatus.NONE
     )
     instructor_bio = models.TextField(
-        blank=True, 
+        blank=True,
         help_text="Why do you want to teach? What's your expertise?"
     )
     instructor_applied_at = models.DateTimeField(null=True, blank=True)
+
+    # Instructor portfolio and credential fields
+    instructor_portfolio_url = models.URLField(
+        blank=True,
+        help_text="GitHub, personal site, or portfolio link"
+    )
+    instructor_teaching_url = models.URLField(
+        blank=True,
+        help_text="Udemy, YouTube, or other platform where you've taught before (optional)"
+    )
+    instructor_credentials_url = models.URLField(
+        blank=True,
+        help_text="Link to your resume, CV, or certificate (Google Drive, Dropbox, LinkedIn, etc.)"
+    )
 
     # Profile fields
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)

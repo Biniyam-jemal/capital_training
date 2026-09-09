@@ -8,7 +8,7 @@ urlpatterns = [
     path('courses/', views.course_list, name='course_list'),
     path('courses/category/<slug:category_slug>/', views.course_list, name='course_list_by_category'),
     path('courses/<slug:slug>/', views.course_detail, name='course_detail'),
-    path('course/<slug:course_slug>/enroll/', views.enroll_course, name='enroll_course'),
+    path('courses/<slug:slug>/review/', views.submit_review, name='submit_review'),
     path('course/<slug:course_slug>/lesson/<slug:lesson_slug>/', views.watch_lesson, name='watch_lesson'),
 
     # --- Instructor area ---
@@ -20,4 +20,7 @@ urlpatterns = [
     path('instructor/modules/<int:module_id>/lessons/add/', instructor_views.lesson_create, name='lesson_create'),
     path('instructor/lessons/<int:lesson_id>/edit/', instructor_views.lesson_edit, name='lesson_edit'),
     path('instructor/lessons/<int:lesson_id>/delete/', instructor_views.lesson_delete, name='lesson_delete'),
+    path('instructor/courses/<slug:slug>/delete/', instructor_views.course_delete, name='course_delete'),
+    path('instructor/courses/<slug:slug>/toggle-publish/', instructor_views.course_toggle_publish, name='course_toggle_publish'),
+    path('instructor/courses/<slug:slug>/students/<int:enrollment_id>/remove/', instructor_views.remove_student, name='remove_student'),
 ]

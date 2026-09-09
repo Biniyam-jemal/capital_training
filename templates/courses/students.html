@@ -1,21 +1,113 @@
 {% extends 'base/base.html' %}
+
+{% block title %}Students - {{ course.title }} - Capital Training{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-  <h1>Students in "{{ course.title }}"</h1>
-  <table class="table mt-3">
-    <thead><tr><th>Name</th><th>Email</th><th>Enrolled</th></tr></thead>
-    <tbody>
-      {% for enrollment in enrollments %}
-      <tr>
-        <td>{{ enrollment.student.username }}</td>
-        <td>{{ enrollment.student.email }}</td>
-        <td>{{ enrollment.created_at|date:"M d, Y" }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="3" class="text-muted">No students enrolled yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-outline-secondary">Back to Course</a>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<div class="students-header">
+    <div>
+        <a href="{% url 'courses:course_edit' course.slug %}" class="back-link"><i class="bi bi-arrow-left"></i> Back to course</a>
+        <h1 class="students-title">Students in "{{ course.title }}"</h1>
+        <p class="students-subtitle">{{ enrollments|length }} active student{{ enrollments|length|pluralize }}</p>
+    </div>
 </div>
+
+<div class="students-table-wrap">
+    <table class="students-table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Enrolled</th>
+                <th>Progress</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment in enrollments %}
+            <tr>
+                <td>
+                    <div class="student-cell">
+                        <div class="student-avatar">{{ enrollment.student.username|slice:":1"|upper }}</div>
+                        <span>{{ enrollment.student.username }}</span>
+                    </div>
+                </td>
+                <td class="text-muted">{{ enrollment.student.email }}</td>
+                <td class="text-muted">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                <td>
+                    <div class="progress-row">
+                        <div class="progress-track"><div class="progress-fill" style="width: {{ enrollment.progress_percent }}%;"></div></div>
+                        <span class="progress-pct">{{ enrollment.progress_percent }}%</span>
+                    </div>
+                </td>
+                <td>
+                    <form method="post" action="{% url 'courses:remove_student' course.slug enrollment.id %}"
+                          onsubmit="return confirm('Remove {{ enrollment.student.username|escapejs }} from this course?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-remove-student"><i class="bi bi-person-dash"></i> Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        <h3>No students enrolled yet</h3>
+                        <p>Once students purchase this course, they'll show up here.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .students-header { margin-bottom: 24px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #6a6f77; text-decoration: none; margin-bottom: 10px; }
+    .back-link:hover { color: #6610f2; }
+    .students-title { font-weight: 800; font-size: 1.5rem; color: #1c1f24; margin-bottom: 4px; }
+    .students-subtitle { color: #6a6f77; font-size: 0.9rem; margin: 0; }
+
+    .students-table-wrap {
+        background: #fff; border: 1px solid #eef0f2; border-radius: 14px; overflow: hidden;
+        box-shadow: 0 6px 18px rgba(20,20,40,0.06);
+    }
+    .students-table { width: 100%; border-collapse: collapse; }
+    .students-table thead th {
+        text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+        color: #9aa0aa; font-weight: 700; padding: 14px 20px; background: #fafbfc; border-bottom: 1px solid #eef0f2;
+    }
+    .students-table tbody td { padding: 14px 20px; border-bottom: 1px solid #f4f5f8; font-size: 0.9rem; color: #1c1f24; vertical-align: middle; }
+    .students-table tbody tr:last-child td { border-bottom: none; }
+
+    .student-cell { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+    .student-avatar {
+        width: 32px; height: 32px; border-radius: 50%; background: #f0eefc; color: #6610f2;
+        display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+    }
+
+    .progress-row { display: flex; align-items: center; gap: 8px; min-width: 130px; }
+    .progress-track { flex: 1; height: 6px; background: #eef0f2; border-radius: 20px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #007bff, #6610f2); border-radius: 20px; }
+    .progress-pct { font-size: 0.75rem; font-weight: 700; color: #6610f2; min-width: 30px; }
+
+    .btn-remove-student {
+        display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #e3e6ea;
+        color: #dc3545; font-weight: 600; font-size: 0.8rem; padding: 6px 14px; border-radius: 8px;
+    }
+    .btn-remove-student:hover { background: #fdf1f2; border-color: #dc3545; }
+
+    .empty-state { text-align: center; padding: 50px 20px; }
+    .empty-state i { font-size: 2.2rem; color: #c3c7cd; margin-bottom: 12px; display: block; }
+    .empty-state h3 { font-weight: 700; font-size: 1rem; color: #2c3345; margin-bottom: 4px; }
+    .empty-state p { color: #9aa0aa; font-size: 0.85rem; margin: 0; }
+
+    @media (max-width: 768px) {
+        .students-table-wrap { overflow-x: auto; }
+        .students-table { min-width: 640px; }
+    }
+</style>
 {% endblock %}

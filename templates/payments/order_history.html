@@ -1,38 +1,123 @@
-
 {% extends 'base/base.html' %}
-{% block content %}
-<h2>My Orders</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Course</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.course.title }}</td>
-            <td>${{ order.amount }}</td>
-            <td>
-                {% if order.status == 'paid' %}
-                    <span class="badge bg-success">Paid</span>
-                {% elif order.status == 'pending' %}
-                    <span class="badge bg-warning text-dark">Pending</span>
-                {% elif order.status == 'failed' %}
-                    <span class="badge bg-danger">Failed</span>
-                {% else %}
-                    <span class="badge bg-secondary">{{ order.get_status_display }}</span>
-                {% endif %}
-            </td>
-            <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4">No orders yet.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block title %}My Orders - Capital Training{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<div class="section-heading">
+    <i class="bi bi-receipt"></i>
+    <span>My Orders</span>
+</div>
+
+<div class="orders-wrap">
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>
+                    <div class="order-course-cell">
+                        <div class="order-thumb">
+                            {% if order.course.thumbnail %}
+                                <img src="{{ order.course.thumbnail.url }}" alt="{{ order.course.title }}">
+                            {% else %}
+                                <i class="bi bi-play-circle"></i>
+                            {% endif %}
+                        </div>
+                        <span class="order-course-title">{{ order.course.title }}</span>
+                    </div>
+                </td>
+                <td class="order-amount">${{ order.amount }}</td>
+                <td>
+                    {% if order.status == 'paid' %}
+                        <span class="status-pill status-paid"><i class="bi bi-check-circle-fill"></i> Paid</span>
+                    {% elif order.status == 'pending' %}
+                        <span class="status-pill status-pending"><i class="bi bi-clock-fill"></i> Pending</span>
+                    {% elif order.status == 'failed' %}
+                        <span class="status-pill status-failed"><i class="bi bi-x-circle-fill"></i> Failed</span>
+                    {% else %}
+                        <span class="status-pill status-refunded"><i class="bi bi-arrow-counterclockwise"></i> {{ order.get_status_display }}</span>
+                    {% endif %}
+                </td>
+                <td class="order-date">{{ order.created_at|date:"M d, Y" }} <span class="order-time">{{ order.created_at|date:"H:i" }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-receipt-cutoff"></i>
+        <h3>No orders yet</h3>
+        <p>Once you purchase a course, your receipts will show up here.</p>
+        <a href="{% url 'courses:course_list' %}" class="btn-browse">Browse Courses</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .section-heading {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 700; font-size: 1.35rem; color: #1c1f24; margin-bottom: 22px;
+    }
+    .section-heading i { color: #6610f2; }
+
+    .orders-wrap {
+        background: #fff; border: 1px solid #eef0f2; border-radius: 14px; overflow: hidden;
+        box-shadow: 0 6px 18px rgba(20,20,40,0.06);
+    }
+    .orders-table { width: 100%; border-collapse: collapse; }
+    .orders-table thead th {
+        text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+        color: #9aa0aa; font-weight: 700; padding: 14px 20px; background: #fafbfc; border-bottom: 1px solid #eef0f2;
+    }
+    .orders-table tbody td { padding: 14px 20px; border-bottom: 1px solid #f4f5f8; font-size: 0.9rem; color: #1c1f24; vertical-align: middle; }
+    .orders-table tbody tr:last-child td { border-bottom: none; }
+    .orders-table tbody tr:hover { background: #fafbfc; }
+
+    .order-course-cell { display: flex; align-items: center; gap: 12px; }
+    .order-thumb {
+        width: 52px; height: 36px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+        background: linear-gradient(135deg, #6610f2, #007bff); color: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .order-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .order-course-title { font-weight: 600; }
+
+    .order-amount { font-weight: 700; }
+
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+    }
+    .status-paid { background: #e6f7ef; color: #0aa06e; }
+    .status-pending { background: #fff5e0; color: #b4690e; }
+    .status-failed { background: #fdecee; color: #dc3545; }
+    .status-refunded { background: #eef0f2; color: #6a6f77; }
+
+    .order-date { color: #6a6f77; }
+    .order-time { color: #c3c7cd; font-size: 0.8rem; }
+
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state i { font-size: 2.6rem; color: #c3c7cd; margin-bottom: 14px; display: block; }
+    .empty-state h3 { font-weight: 700; font-size: 1.1rem; color: #2c3345; margin-bottom: 6px; }
+    .empty-state p { color: #6a6f77; font-size: 0.9rem; margin-bottom: 20px; }
+    .btn-browse {
+        display: inline-block; background: linear-gradient(135deg, #007bff, #6610f2); color: #fff;
+        font-weight: 600; padding: 10px 24px; border-radius: 10px; text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .orders-wrap { overflow-x: auto; }
+        .orders-table { min-width: 600px; }
+    }
+</style>
 {% endblock %}

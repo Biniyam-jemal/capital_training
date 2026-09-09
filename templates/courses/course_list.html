@@ -1,4 +1,4 @@
-{% extends 'base/base.html' %}
+﻿{% extends 'base/base.html' %}
 
 {% block content %}
 <div class="container py-4">
@@ -19,8 +19,24 @@
         {% for course in courses %}
         <div class="col-md-3 mb-4">
             <div class="card h-100 shadow-sm">
+                {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height:160px; object-fit:cover;">
+                {% else %}
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary text-white" style="height:160px;">
+                        <i class="fas fa-book fa-2x opacity-50"></i>
+                    </div>
+                {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
+                    <div class="udemy-rating mb-1">
+    {% if course.review_count %}
+        <span class="rating-num">{{ course.avg_rating|floatformat:1 }}</span>
+        <span class="rating-star">★</span>
+        <span class="rating-count">({{ course.review_count }})</span>
+    {% else %}
+        <span class="rating-count">New</span>
+    {% endif %}
+</div>
                     <p class="text-muted small">
                         {{ course.get_level_display }} • {{ course.language }}
                     </p>

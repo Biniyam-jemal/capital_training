@@ -68,6 +68,10 @@ INSTALLED_APPS = [
     'payments',
 ]
 
+
+
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',

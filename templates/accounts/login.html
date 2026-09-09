@@ -1,10 +1,165 @@
-
 {% extends 'base/base.html' %}
+
+{% block title %}Login - Capital Training{% endblock %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-card-header">
+            <div class="auth-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </div>
+            <h2 class="mb-1">Welcome back</h2>
+            <p class="text-muted mb-0">Log in to continue learning</p>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate class="auth-form">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                <input
+                    type="text"
+                    name="{{ form.username.html_name }}"
+                    id="{{ form.username.id_for_label }}"
+                    class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                    value="{{ form.username.value|default:'' }}"
+                    placeholder="Your username"
+                    autofocus
+                    required>
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">{{ form.username.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                <div class="input-group">
+                    <input
+                        type="password"
+                        name="{{ form.password.html_name }}"
+                        id="{{ form.password.id_for_label }}"
+                        class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                        placeholder="Your password"
+                        required>
+                    <button class="btn btn-outline-secondary toggle-password" type="button" data-target="{{ form.password.id_for_label }}">
+                        <i class="show-icon">Show</i>
+                    </button>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback">{{ form.password.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">Log in</button>
+        </form>
+
+        <p class="text-center text-muted mt-4 mb-0">
+            Don't have an account? <a href="{% url 'accounts:register' %}">Create one</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    .auth-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 40px 16px 60px;
+    }
+    .auth-card {
+        width: 100%;
+        max-width: 440px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 36px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eef0f2;
+    }
+    .auth-card-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+    .auth-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+    .auth-card-header h2 {
+        font-weight: 700;
+        font-size: 1.6rem;
+    }
+    .auth-form .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #2c3e50;
+    }
+    .auth-form .form-control {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #dfe3e8;
+    }
+    .auth-form .form-control:focus {
+        border-color: #6610f2;
+        box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.15);
+    }
+    .toggle-password {
+        border-color: #dfe3e8;
+    }
+    .show-icon {
+        font-style: normal;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 12px;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(102, 16, 242, 0.3);
+    }
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 28px 20px;
+        }
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.toggle-password').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = document.getElementById(btn.getAttribute('data-target'));
+            var icon = btn.querySelector('.show-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'Show';
+            }
+        });
+    });
+</script>
 {% endblock %}
