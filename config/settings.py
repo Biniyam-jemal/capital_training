@@ -68,9 +68,8 @@ INSTALLED_APPS = [
     'courses',
     'enrollments',
     'payments',
+    'utils',
 ]
-
-
 
 
 
@@ -164,7 +163,7 @@ STORAGES = {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'utils.storage.TolerantManifestStaticFilesStorage',
     },
 }
 
@@ -205,3 +204,5 @@ LOGGING = {
         },
     },
 }
+# Django 5.1 removed STATICFILES_STORAGE, but django-cloudinary-storage's collectstatic command still reads it.
+STATICFILES_STORAGE = 'utils.storage.TolerantManifestStaticFilesStorage'
