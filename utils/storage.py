@@ -4,17 +4,19 @@
 class TolerantManifestStaticFilesStorage(CompressedManifestStaticFilesStorage):
     """WhiteNoise storage that:
     - Skips missing referenced assets (manifest_strict = False)
-    - Skips the compression post-processing step entirely
-      (which crashes on Render's ephemeral filesystem)
+    - Skips compression only (avoids the FileNotFoundError race on Render)
+    - Still builds the manifest so WhiteNoise can serve files at runtime
     """
+
     manifest_strict = False
 
     def post_process(self, paths, dry_run=False, **options):
-        # Skip WhiteNoise's post-processing (hashing + compression) entirely.
-        # Files are still collected; they just aren't gzip-compressed.
-        # WhiteNoise will still serve them uncompressed at runtime.
-        return
-        yield  # unreachable, but makes this a generator function
+        # Skip WhiteNoise's compression step, but still run Django's
+        # manifest generation so WhiteNoise can find files at runtime.
+        from django.contrib.staticfiles.storage import ManifestFilesMixin
+        yield from ManifestFilesMixin.post_process(
+            self, paths, dry_run, **options
+        )
 
     def stored_name(self, name):
         try:
