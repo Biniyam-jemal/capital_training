@@ -56,11 +56,23 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = self._generate_unique_slug()
         # keep price/is_free consistent
         if self.price == 0:
             self.is_free = True
         super().save(*args, **kwargs)
+
+    def _generate_unique_slug(self):
+        base_slug = slugify(self.title) or 'course'
+        slug = base_slug
+        suffix = 1
+        # Exclude self.pk so re-saving an existing course without a slug
+        # change doesn't collide with its own row.
+        qs = Course.objects.exclude(pk=self.pk)
+        while qs.filter(slug=slug).exists():
+            suffix += 1
+            slug = f"{base_slug}-{suffix}"
+        return slug
 
     def __str__(self):
         return self.title
@@ -102,6 +114,21 @@ class Lesson(models.Model):
 
     class Meta:
         ordering = ['order']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._generate_unique_slug()
+        super().save(*args, **kwargs)
+
+    def _generate_unique_slug(self):
+        base_slug = slugify(self.title) or 'lesson'
+        slug = base_slug
+        suffix = 1
+        qs = Lesson.objects.exclude(pk=self.pk)
+        while qs.filter(slug=slug).exists():
+            suffix += 1
+            slug = f"{base_slug}-{suffix}"
+        return slug
 
     def __str__(self):
         return f"{self.module.course.title} - {self.title}"
