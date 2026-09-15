@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container py-4">
     {% if course.thumbnail %}
-        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-100 rounded mb-4" style="max-height:200px; object-fit:cover; object-position: top;">
+        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="course-thumbnail-hero rounded mb-4">
     {% endif %}
     <!-- Course Header -->
     <div class="row mb-4">
@@ -173,6 +173,13 @@
 
 <!-- Add custom CSS for this page -->
 <style>
+    .course-thumbnail-hero {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
     .module-section {
         background: white;
         border-radius: 12px;
@@ -270,6 +277,9 @@
         .display-5 {
             font-size: 1.8rem;
         }
+        .course-thumbnail-hero {
+            height: 160px;
+        }
         .module-section {
             padding: 15px;
         }
@@ -285,5 +295,3 @@
     }
 </style>
 {% endblock %}
-
-
